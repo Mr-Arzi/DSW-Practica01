@@ -1,0 +1,19 @@
+# VCS
+.git/
+
+# Build outputs
+target/
+build/
+out/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs / env
+*.log*
+.env*
+
+# Docker metadata
+Dockerfile*
+.dockerignore

@@ -90,6 +90,19 @@
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
 
+### Constitution Alignment Requirements *(mandatory)*
+
+- **CA-001**: Backend implementation MUST target Spring Boot 3.x with Java 17.
+- **CA-002**: API security MUST define HTTP Basic authentication behavior,
+  credential source, initial credentials (`admin` / `admin123`), and `401 Unauthorized`
+  behavior for missing/invalid credentials.
+- **CA-003**: Persistent data changes MUST describe PostgreSQL schema impact and
+  migration strategy.
+- **CA-004**: Local execution requirements MUST define Docker (and when needed,
+  Docker Compose) services and environment variables.
+- **CA-005**: API changes MUST include OpenAPI/Swagger documentation updates.
+- **CA-006**: API routes MUST be versioned and exposed under `/api/v1` only.
+
 *Example of marking unclear requirements:*
 
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]

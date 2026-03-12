@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: empleados-postgres
+    environment:
+      POSTGRES_DB: empleados
+      POSTGRES_USER: empleados_user
+      POSTGRES_PASSWORD: empleados_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U empleados_user -d empleados"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: empleados-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/empleados
+      SPRING_DATASOURCE_USERNAME: empleados_user
+      SPRING_DATASOURCE_PASSWORD: empleados_pass
+      APP_SECURITY_ADMIN_USERNAME: admin
+      APP_SECURITY_ADMIN_PASSWORD: admin123
+      APP_SECURITY_LECTOR_USERNAME: lector
+      APP_SECURITY_LECTOR_PASSWORD: lector123
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

@@ -31,7 +31,14 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Stack Gate: Uses Spring Boot 3.x and Java 17 for backend implementation.
+- Security Gate: Defines HTTP Basic authentication scope and public endpoint exceptions.
+- Auth Gate: Enforces HTTP Basic authentication on all endpoints with 401 for missing/invalid credentials.
+- Versioning Gate: Exposes API endpoints only under `/api/v1` (no unversioned endpoints).
+- Data Gate: Uses PostgreSQL with explicit schema/migration approach.
+- Runtime Gate: Defines Docker/Docker Compose strategy for local parity.
+- API Contract Gate: Confirms OpenAPI/Swagger updates for any API surface changes.
+- Separation Gate: Documents controller/service/repository responsibilities.
 
 ## Project Structure
 
