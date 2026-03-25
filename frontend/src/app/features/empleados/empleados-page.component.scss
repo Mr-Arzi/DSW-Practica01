@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.edit-btn,
+.danger-btn {
+  margin-right: 0.5rem;
+}
+
+.edit-btn {
+  background: #1d4ed8;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.4rem 0.7rem;
+}

@@ -1,7 +1,10 @@
 package com.example.empleados.api;
 
+import com.example.empleados.api.dto.LoginErrorResponse;
+import com.example.empleados.application.exception.BadRequestException;
 import com.example.empleados.application.exception.ConflictException;
 import com.example.empleados.application.exception.InvalidClaveException;
+import com.example.empleados.application.exception.InvalidCredentialsException;
 import com.example.empleados.application.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +46,11 @@ public class ApiExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "INVALID_CLAVE", exception.getMessage(), null);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException exception) {
+        return build(HttpStatus.BAD_REQUEST, "BAD_REQUEST", exception.getMessage(), null);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException exception) {
         return build(HttpStatus.NOT_FOUND, "NOT_FOUND", exception.getMessage(), null);
@@ -51,6 +59,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<Map<String, Object>> handleConflict(ConflictException exception) {
         return build(HttpStatus.CONFLICT, "CONFLICT", exception.getMessage(), null);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<LoginErrorResponse> handleInvalidCredentials(InvalidCredentialsException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginErrorResponse(exception.getMessage()));
     }
 
     private ResponseEntity<Map<String, Object>> build(

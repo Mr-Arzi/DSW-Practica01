@@ -32,12 +32,15 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - Stack Gate: Uses Spring Boot 3.x and Java 17 for backend implementation.
+- Frontend Gate: Includes Angular web frontend using a modern stable version.
 - Security Gate: Defines HTTP Basic authentication scope and public endpoint exceptions.
 - Auth Gate: Enforces HTTP Basic authentication on all endpoints with 401 for missing/invalid credentials.
+- Frontend Auth Gate: Frontend API calls include HTTP Basic credentials for protected endpoints.
 - Versioning Gate: Exposes API endpoints only under `/api/v1` (no unversioned endpoints).
 - Data Gate: Uses PostgreSQL with explicit schema/migration approach.
 - Runtime Gate: Defines Docker/Docker Compose strategy for local parity.
 - API Contract Gate: Confirms OpenAPI/Swagger updates for any API surface changes.
+- E2E Gate: Includes Cypress tests for authentication, employee management, and department management flows.
 - Separation Gate: Documents controller/service/repository responsibilities.
 
 ## Project Structure

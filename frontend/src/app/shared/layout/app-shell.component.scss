@@ -1,0 +1,82 @@
+.shell-header {
+  align-items: center;
+  backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(14, 14, 17, 0.93), rgba(23, 24, 29, 0.86));
+  border-bottom: 1px solid rgba(244, 117, 33, 0.25);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem clamp(1rem, 4vw, 2rem);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand-kicker {
+  color: var(--cr-orange-soft);
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.brand h1 {
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.2rem);
+  letter-spacing: 0.03em;
+  line-height: 1;
+  margin: 0;
+}
+
+.shell-nav {
+  align-items: center;
+  display: flex;
+  gap: 0.65rem;
+}
+
+.shell-nav a {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--cr-text-muted);
+  font-weight: 700;
+  padding: 0.42rem 0.9rem;
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+
+.shell-nav a.active {
+  background: rgba(244, 117, 33, 0.12);
+  border-color: rgba(244, 117, 33, 0.5);
+  color: #fff;
+}
+
+.shell-nav a:hover {
+  color: #fff;
+}
+
+.logout-btn {
+  background: linear-gradient(120deg, #f47521, #e65d0a);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.45rem 0.95rem;
+}
+
+.shell-main {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+}
+
+@media (max-width: 840px) {
+  .shell-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .shell-nav {
+    flex-wrap: wrap;
+  }
+}

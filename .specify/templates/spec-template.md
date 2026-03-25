@@ -102,6 +102,9 @@
   Docker Compose) services and environment variables.
 - **CA-005**: API changes MUST include OpenAPI/Swagger documentation updates.
 - **CA-006**: API routes MUST be versioned and exposed under `/api/v1` only.
+- **CA-007**: The system MUST include a web frontend implemented in Angular using a modern stable version compatible with the current ecosystem.
+- **CA-008**: Frontend API requests MUST use HTTP Basic authentication credentials for protected endpoints and consume backend endpoints under `/api/v1`.
+- **CA-009**: The system MUST include Cypress end-to-end tests that cover authentication, employee management, and department management core flows.
 
 *Example of marking unclear requirements:*
 

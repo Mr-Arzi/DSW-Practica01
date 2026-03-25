@@ -1,0 +1,236 @@
+openapi: 3.0.3
+info:
+  title: API Departamentos
+  version: 1.0.0
+  description: Contrato para CRUD de departamentos y reglas de integridad con empleados.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/departamentos:
+    get:
+      summary: Listar departamentos
+      operationId: listarDepartamentos
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: Lista de departamentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DepartamentoResponse'
+        '401':
+          description: Missing or invalid credentials
+        '403':
+          description: Forbidden for role
+    post:
+      summary: Crear departamento
+      operationId: crearDepartamento
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartamentoCreateRequest'
+      responses:
+        '201':
+          description: Departamento creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartamentoResponse'
+        '400':
+          description: Error de validacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Duplicidad de clave
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid credentials
+        '403':
+          description: Forbidden for role
+
+  /api/v1/departamentos/{id}:
+    get:
+      summary: Consultar departamento por id
+      operationId: obtenerDepartamento
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Departamento encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartamentoResponse'
+        '404':
+          description: Departamento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid credentials
+        '403':
+          description: Forbidden for role
+    put:
+      summary: Actualizar departamento
+      operationId: actualizarDepartamento
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartamentoUpdateRequest'
+      responses:
+        '200':
+          description: Departamento actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartamentoResponse'
+        '400':
+          description: Error de validacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Departamento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Duplicidad de clave
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid credentials
+        '403':
+          description: Forbidden for role
+    delete:
+      summary: Eliminar departamento
+      operationId: eliminarDepartamento
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Departamento eliminado
+        '404':
+          description: Departamento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflicto de integridad (empleados asociados)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid credentials
+        '403':
+          description: Forbidden for role
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    DepartamentoCreateRequest:
+      type: object
+      required:
+        - clave
+        - nombre
+      properties:
+        clave:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: FIN
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Finanzas
+    DepartamentoUpdateRequest:
+      type: object
+      required:
+        - clave
+        - nombre
+      properties:
+        clave:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: RRHH
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Recursos Humanos
+    DepartamentoResponse:
+      type: object
+      required:
+        - id
+        - clave
+        - nombre
+      properties:
+        id:
+          type: integer
+          format: int64
+        clave:
+          type: string
+        nombre:
+          type: string
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

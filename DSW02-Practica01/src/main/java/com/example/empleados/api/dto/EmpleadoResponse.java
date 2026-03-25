@@ -9,7 +9,11 @@ public record EmpleadoResponse(
         String nombre,
         String direccion,
         String telefono,
-        Boolean activo
+        Boolean activo,
+        String email,
+        Long departamentoId,
+        String departamentoClave,
+        String departamentoNombre
 ) {
     public static EmpleadoResponse from(Empleado empleado) {
         return new EmpleadoResponse(
@@ -19,7 +23,11 @@ public record EmpleadoResponse(
                 empleado.getNombre(),
                 empleado.getDireccion(),
                 empleado.getTelefono(),
-                empleado.getActivo()
+                empleado.getActivo(),
+                empleado.getEmail(),
+                empleado.getDepartamentoId(),
+                empleado.getDepartamentoClave(),
+                empleado.getDepartamentoNombre()
         );
     }
 }

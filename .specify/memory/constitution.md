@@ -1,22 +1,23 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.1.0
+- Version change: 1.1.1 -> 1.2.0
 - Modified principles:
-	- None
+- None
 - Added sections:
-	- VI. API Versioning Is Mandatory
-	- VII. Authentication Is Mandatory
+- VIII. Frontend Web Is Mandatory (Angular)
+- IX. Frontend Authentication Uses HTTP Basic
+- X. End-to-End Testing Is Mandatory (Cypress)
 - Removed sections:
-	- None
+- None
 - Templates requiring updates:
-	- ✅ updated: .specify/templates/plan-template.md
-	- ✅ updated: .specify/templates/spec-template.md
-	- ✅ updated: .specify/templates/tasks-template.md
-	- ⚠ pending: .specify/templates/commands/*.md (directory not present)
-	- ⚠ pending: README.md and docs/quickstart.md (files not present)
+- ✅ updated: .specify/templates/plan-template.md
+- ✅ updated: .specify/templates/spec-template.md
+- ✅ updated: .specify/templates/tasks-template.md
+- ⚠ pending: .specify/templates/commands/*.md (directory not present)
+- ⚠ pending: README.md and docs/quickstart.md (files not present)
 - Follow-up TODOs:
-	- Create command templates directory if custom speckit command docs are required.
-	- Add repository runtime docs to reflect this constitution when docs are created.
+- Create command templates directory if custom speckit command docs are required.
+- Add repository runtime docs to reflect this constitution when docs are created.
 -->
 
 # DSW-Practica02 Constitution
@@ -68,7 +69,32 @@ Rationale: explicit API versioning prevents contract drift and enables controlle
 All endpoints MUST require HTTP Basic authentication. Initial credentials MUST be:
 username `admin`, password `admin123`. Requests without valid authentication MUST
 respond with HTTP `401 Unauthorized`.
-Rationale: a uniform auth gate protects every endpoint and enforces consistent behavior.
+Exception: explicit credential-verification or health endpoints may be declared public
+(no HTTP Basic required) when justified in the feature specification and approved in the
+feature's Constitution Alignment Requirements section. The exception MUST be narrowly
+scoped to the specific HTTP method and path (e.g., `POST /api/v1/auth/login`) and MUST
+not affect any other endpoint. All other endpoints remain protected.
+Rationale: a uniform auth gate protects every endpoint and enforces consistent behavior;
+explicit public exceptions enable authentication bootstrapping without compromising the
+overall security baseline.
+
+### VIII. Frontend Web Is Mandatory (Angular)
+The system MUST include a web frontend implemented with Angular. The frontend MUST
+use a modern, stable Angular version compatible with the current ecosystem. The
+frontend MUST consume backend REST endpoints only under the `/api/v1` prefix.
+Rationale: a standardized frontend stack improves maintainability and integration speed.
+
+### IX. Frontend Authentication Uses HTTP Basic
+The frontend MUST handle authentication using HTTP Basic for backend API calls. All
+requests from the frontend to the API MUST include valid credentials, except endpoints
+explicitly declared public by this constitution and feature specification.
+Rationale: consistent authentication behavior across clients prevents security drift.
+
+### X. End-to-End Testing Is Mandatory (Cypress)
+The system MUST include end-to-end tests using Cypress. End-to-end coverage MUST
+include at least these core flows: authentication, employee management, and
+department management.
+Rationale: mandatory E2E coverage protects critical business flows against regressions.
 
 ## Security and Infrastructure Standards
 
@@ -79,7 +105,7 @@ Rationale: a uniform auth gate protects every endpoint and enforces consistent b
 - Secrets MUST be injected from environment or secret stores, never committed.
 - API error handling MUST avoid leaking sensitive internals.
 - APIs MUST be exposed under `/api/v1` and MUST NOT ship unversioned routes.
-- Requests without valid HTTP Basic credentials MUST return HTTP 401 Unauthorized.
+- Requests without valid HTTP Basic credentials MUST return HTTP 401 Unauthorized (except explicitly declared public endpoints per §VII).
 
 ## Delivery Workflow and Quality Gates
 
@@ -106,4 +132,7 @@ Versioning policy for this constitution follows semantic versioning:
 Compliance review is mandatory at plan approval, task generation, and pull request review.
 Any temporary exception MUST include scope, owner, expiration date, and remediation plan.
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-05
+**Version**: 1.2.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-19
+**v1.2.0 Amendment**: Added principles §VIII, §IX, and §X to mandate Angular frontend,
+HTTP Basic frontend authentication behavior, and Cypress E2E coverage for
+authentication, employee management, and department management.

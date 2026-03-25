@@ -5,6 +5,8 @@
 target/
 build/
 out/
+coverage/
+node_modules/
 
 # IDE
 .vscode/

@@ -1,0 +1,40 @@
+<section class="module-page">
+  <header class="module-header">
+    <div>
+      <p class="eyebrow">Modulo</p>
+      <h2>Departamentos</h2>
+    </div>
+    <span class="module-badge" [class.module-badge--readonly]="!canWrite">
+      {{ canWrite ? 'Edicion habilitada' : 'Solo lectura' }}
+    </span>
+  </header>
+
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="module-form" *ngIf="canWrite">
+    <app-departamento-form [submitLabel]="'Crear departamento'" (saveDepartamento)="create($event)" />
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Clave</th>
+          <th>Nombre</th>
+          <th *ngIf="canWrite">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let departamento of departamentos">
+          <td>{{ departamento.id }}</td>
+          <td>{{ departamento.clave }}</td>
+          <td>{{ departamento.nombre }}</td>
+          <td *ngIf="canWrite">
+            <button type="button" class="danger-btn" (click)="remove(departamento.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

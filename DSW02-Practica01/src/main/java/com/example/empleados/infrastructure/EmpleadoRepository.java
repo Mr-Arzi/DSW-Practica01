@@ -12,5 +12,9 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, EmpleadoId> 
 
     Page<Empleado> findByActivoTrue(Pageable pageable);
 
+    Optional<Empleado> findByEmailAndActivoTrue(String email);
+
     Optional<Empleado> findByIdPrefijoClaveAndIdNumeroClaveAndActivoTrue(String prefijoClave, Long numeroClave);
+
+    long countByDepartamento_Id(Long departamentoId);
 }

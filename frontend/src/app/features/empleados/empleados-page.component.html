@@ -1,0 +1,50 @@
+<section class="module-page">
+  <header class="module-header">
+    <div>
+      <p class="eyebrow">Modulo</p>
+      <h2>Empleados</h2>
+    </div>
+    <span class="module-badge" [class.module-badge--readonly]="!canWrite">
+      {{ canWrite ? 'Edicion habilitada' : 'Solo lectura' }}
+    </span>
+  </header>
+
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="module-form" *ngIf="canWrite">
+    <app-empleado-form
+      [mode]="selectedEmpleado ? 'edit' : 'create'"
+      [empleado]="selectedEmpleado"
+      [departamentos]="departamentos"
+      [submitLabel]="selectedEmpleado ? 'Guardar cambios' : 'Crear empleado'"
+      (saveEmpleado)="save($event)"
+      (cancelEdit)="cancelEdit()"
+    />
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Clave</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Departamento</th>
+          <th *ngIf="canWrite">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let empleado of empleados">
+          <td>{{ empleado.clave }}</td>
+          <td>{{ empleado.nombre }}</td>
+          <td>{{ empleado.email }}</td>
+          <td>{{ empleado.departamentoNombre }}</td>
+          <td *ngIf="canWrite">
+            <button type="button" class="edit-btn" (click)="startEdit(empleado)">Editar</button>
+            <button type="button" class="danger-btn" (click)="remove(empleado.clave)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

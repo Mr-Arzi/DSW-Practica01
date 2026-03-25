@@ -7,8 +7,10 @@ import com.example.empleados.api.dto.EmpleadoUpdateRequest;
 import com.example.empleados.application.exception.ConflictException;
 import com.example.empleados.application.exception.InvalidClaveException;
 import com.example.empleados.application.exception.ResourceNotFoundException;
+import com.example.empleados.domain.Departamento;
 import com.example.empleados.domain.Empleado;
 import com.example.empleados.domain.EmpleadoId;
+import com.example.empleados.infrastructure.DepartamentoRepository;
 import com.example.empleados.infrastructure.EmpleadoRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,27 +35,51 @@ public class EmpleadoService {
     private static final Pattern CLAVE_PATTERN = Pattern.compile("^EMP-(\\d+)$");
 
     private final EmpleadoRepository empleadoRepository;
+    private final DepartamentoRepository departamentoRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final PasswordEncoder passwordEncoder;
 
-    public EmpleadoService(EmpleadoRepository empleadoRepository, JdbcTemplate jdbcTemplate) {
+    public EmpleadoService(
+            EmpleadoRepository empleadoRepository,
+            DepartamentoRepository departamentoRepository,
+            JdbcTemplate jdbcTemplate,
+            PasswordEncoder passwordEncoder
+    ) {
         this.empleadoRepository = empleadoRepository;
+        this.departamentoRepository = departamentoRepository;
         this.jdbcTemplate = jdbcTemplate;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public EmpleadoResponse create(EmpleadoCreateRequest request) {
         Long nextNumero = jdbcTemplate.queryForObject("SELECT nextval('empleado_numero_clave_seq')", Long.class);
+        String normalizedEmail = normalizeEmail(request.email());
+        String passwordHash = hashPassword(request.password());
+        Departamento departamento = resolveDepartamento(request.departamentoId());
+
         Empleado empleado = new Empleado(
                 new EmpleadoId(CLAVE_PREFIX, nextNumero),
                 request.nombre().trim(),
                 request.direccion().trim(),
                 request.telefono().trim(),
-                true
+                true,
+                normalizedEmail,
+                passwordHash,
+                departamento
         );
         try {
-            return EmpleadoResponse.from(empleadoRepository.save(empleado));
+            return EmpleadoResponse.from(empleadoRepository.saveAndFlush(empleado));
         } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("No fue posible generar una clave única de empleado");
+            String causeMessage = exception.getMostSpecificCause() != null
+                    ? exception.getMostSpecificCause().getMessage()
+                    : "";
+
+            if (causeMessage != null && causeMessage.contains("ux_empleados_email")) {
+                throw new ConflictException("El correo ya esta registrado");
+            }
+
+            throw new ConflictException("No fue posible crear el empleado con los datos proporcionados");
         }
     }
 
@@ -89,6 +116,7 @@ public class EmpleadoService {
         }
 
         empleado.updateDatos(request.nombre().trim(), request.direccion().trim(), request.telefono().trim());
+        empleado.assignDepartamento(resolveDepartamento(request.departamentoId()));
         return EmpleadoResponse.from(empleadoRepository.save(empleado));
     }
 
@@ -112,5 +140,27 @@ public class EmpleadoService {
             throw new InvalidClaveException("Formato de clave inválido. Se espera EMP-<autonumérico>");
         }
         return new EmpleadoId(CLAVE_PREFIX, Long.parseLong(matcher.group(1)));
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        return email.trim().toLowerCase();
+    }
+
+    private String hashPassword(String password) {
+        if (password == null || password.isBlank()) {
+            return null;
+        }
+        return passwordEncoder.encode(password);
+    }
+
+    private Departamento resolveDepartamento(Long departamentoId) {
+        if (departamentoId == null) {
+            throw new ResourceNotFoundException("Departamento no encontrado");
+        }
+        return departamentoRepository.findById(departamentoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Departamento no encontrado"));
     }
 }

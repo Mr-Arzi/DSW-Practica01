@@ -1,0 +1,16 @@
+<header class="shell-header">
+  <div class="brand">
+    <p class="brand-kicker">Panel interno</p>
+    <h1>Gestion de Personal</h1>
+  </div>
+
+  <nav class="shell-nav" aria-label="Navegacion principal">
+    <a routerLink="/empleados" routerLinkActive="active">Empleados</a>
+    <a routerLink="/departamentos" routerLinkActive="active">Departamentos</a>
+    <button type="button" class="logout-btn" (click)="logout()">Cerrar sesion</button>
+  </nav>
+</header>
+
+<main class="shell-main">
+  <router-outlet />
+</main>
