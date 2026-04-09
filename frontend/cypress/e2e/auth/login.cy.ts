@@ -1,8 +1,17 @@
 describe('Auth login', () => {
-  it('permite login exitoso', () => {
+  it('permite login exitoso para admin', () => {
     cy.fixture('test-data.json').then((data) => {
       cy.login(data.admin.email, data.admin.password);
       cy.url().should('include', '/empleados');
+      cy.contains('Edicion habilitada').should('be.visible');
+    });
+  });
+
+  it('permite login exitoso para lector en modo solo lectura', () => {
+    cy.fixture('test-data.json').then((data) => {
+      cy.login(data.lector.email, data.lector.password);
+      cy.url().should('include', '/empleados');
+      cy.contains('Solo lectura').should('be.visible');
     });
   });
 
