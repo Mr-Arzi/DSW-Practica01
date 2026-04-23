@@ -46,7 +46,7 @@ Cypress.Commands.add('ensureTestData', () => {
     seedUsers.forEach((payload) => {
       cy.request({
         method: 'POST',
-        url: 'http://localhost:8080/api/v1/empleados',
+        url: '/api/v1/empleados',
         headers: {
           Authorization: adminAuth,
           'Content-Type': 'application/json'
