@@ -16,6 +16,9 @@ on:
   workflow_run:
     workflows:
       - ci
+    branches:
+      - develop
+      - master
     types:
       - completed
 
@@ -59,13 +62,14 @@ jobs:
         run: mvn -B -DskipTests compile
 
       - name: Resolve Sonar project key
+        id: sonar_key
         env:
           REPO_KEY: ${{ vars.SONAR_PROJECT_KEY }}
         run: |
           if [ -n "$REPO_KEY" ]; then
-            echo "SONAR_PROJECT_KEY=$REPO_KEY" >> "$GITHUB_ENV"
+            echo "project_key=$REPO_KEY" >> "$GITHUB_OUTPUT"
           else
-            echo "SONAR_PROJECT_KEY=${GITHUB_REPOSITORY/\//_}" >> "$GITHUB_ENV"
+            echo "project_key=${GITHUB_REPOSITORY/\//_}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Validate Sonar secrets
@@ -89,7 +93,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >-
-            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.projectKey=${{ steps.sonar_key.outputs.project_key }}
             -Dsonar.projectName=DSW-Practica02
             -Dsonar.sources=DSW02-Practica01/src/main/java,frontend/src
             -Dsonar.tests=DSW02-Practica01/src/test/java,frontend/src
