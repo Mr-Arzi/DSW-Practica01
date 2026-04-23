@@ -1,0 +1,93 @@
+name: sonarqube-pr
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_run:
+    workflows:
+      - ci
+    types:
+      - completed
+
+jobs:
+  analysis:
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Compile backend
+        working-directory: DSW02-Practica01
+        run: mvn -B -DskipTests compile
+
+      - name: Resolve Sonar project key
+        env:
+          REPO_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+        run: |
+          if [ -n "$REPO_KEY" ]; then
+            echo "SONAR_PROJECT_KEY=$REPO_KEY" >> "$GITHUB_ENV"
+          else
+            echo "SONAR_PROJECT_KEY=${GITHUB_REPOSITORY/\//_}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Validate Sonar secrets
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "Falta configurar el secreto SONAR_TOKEN en el repositorio."
+            exit 1
+          fi
+          if [ -z "$SONAR_HOST_URL" ]; then
+            echo "Falta configurar el secreto SONAR_HOST_URL en el repositorio."
+            exit 1
+          fi
+
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >-
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.projectName=DSW-Practica02
+            -Dsonar.sources=DSW02-Practica01/src/main/java,frontend/src
+            -Dsonar.tests=DSW02-Practica01/src/test/java,frontend/src
+            -Dsonar.test.inclusions=**/*Test.java,**/*Tests.java,**/*.spec.ts,**/*.cy.ts
+            -Dsonar.java.binaries=DSW02-Practica01/target/classes
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/target/**,**/cypress/results/**
