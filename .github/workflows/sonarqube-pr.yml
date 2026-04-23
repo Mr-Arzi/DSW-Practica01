@@ -75,15 +75,22 @@ jobs:
       - name: Validate Sonar secrets
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_HOST_URL_SECRET: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_HOST_URL_VAR: ${{ vars.SONAR_HOST_URL }}
         run: |
           if [ -z "$SONAR_TOKEN" ]; then
             echo "Falta configurar el secreto SONAR_TOKEN en el repositorio."
             exit 1
           fi
-          if [ -z "$SONAR_HOST_URL" ]; then
-            echo "Falta configurar el secreto SONAR_HOST_URL en el repositorio."
-            exit 1
+
+          # Prioridad: secreto > variable de repositorio > fallback SonarCloud.
+          if [ -n "$SONAR_HOST_URL_SECRET" ]; then
+            echo "SONAR_HOST_URL=$SONAR_HOST_URL_SECRET" >> "$GITHUB_ENV"
+          elif [ -n "$SONAR_HOST_URL_VAR" ]; then
+            echo "SONAR_HOST_URL=$SONAR_HOST_URL_VAR" >> "$GITHUB_ENV"
+          else
+            echo "SONAR_HOST_URL=https://sonarcloud.io" >> "$GITHUB_ENV"
+            echo "SONAR_HOST_URL no configurado; usando fallback https://sonarcloud.io"
           fi
 
       - name: SonarQube scan
