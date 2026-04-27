@@ -4,6 +4,9 @@ on:
   workflow_run:
     workflows:
       - 1-ci
+    branches:
+      - develop
+      - master
     types:
       - completed
   pull_request:
@@ -19,7 +22,7 @@ jobs:
   analysis:
     if: |
       (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
-      (github.event_name == 'workflow_run')
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -68,12 +71,13 @@ jobs:
           fi
 
       - name: SonarQube scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
         with:
           args: >-
+            -Dsonar.organization=mr-arzi
             -Dsonar.projectKey=${{ steps.sonar_key.outputs.project_key }}
             -Dsonar.projectName=DSW-Practica02
             -Dsonar.sources=DSW02-Practica01/src/main/java,frontend/src
