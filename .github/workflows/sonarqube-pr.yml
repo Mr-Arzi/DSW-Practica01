@@ -1,10 +1,14 @@
-name: sonarqube-pr
+name: 2-sonarqube-pr
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - 1-ci
     branches:
       - develop
       - master
+    types:
+      - completed
   pull_request:
     branches:
       - master
@@ -13,19 +17,10 @@ on:
       - synchronize
       - reopened
       - ready_for_review
-  workflow_run:
-    workflows:
-      - ci
-    branches:
-      - develop
-      - master
-    types:
-      - completed
 
 jobs:
   analysis:
     if: |
-      (github.event_name == 'push') ||
       (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
