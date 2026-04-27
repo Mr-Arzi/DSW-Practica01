@@ -27,8 +27,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write # write para que Sonar pueda decorar el PR
-    env:
-      SONAR_TESTS: frontend/src
 
     steps:
       - name: Checkout
@@ -60,15 +58,6 @@ jobs:
         working-directory: DSW02-Practica01
         run: mvn -B -DskipTests compile
 
-      - name: Resolve test paths
-        run: |
-          # Verifica que existan archivos de prueba reales, no solo la carpeta
-          if find "DSW02-Practica01/src/test/java" -name "*.java" -print -quit 2>/dev/null | grep -q .; then
-            echo "SONAR_TESTS=DSW02-Practica01/src/test/java,frontend/src" >> "$GITHUB_ENV"
-          else
-            echo "SONAR_TESTS=frontend/src" >> "$GITHUB_ENV"
-          fi
-
       - name: Resolve Sonar project key
         id: sonar_key
         run: |
@@ -94,7 +83,7 @@ jobs:
             -Dsonar.projectKey=${{ steps.sonar_key.outputs.project_key }}
             -Dsonar.projectName=DSW-Practica02
             -Dsonar.sources=DSW02-Practica01/src/main/java,frontend/src
-            -Dsonar.tests=${{ env.SONAR_TESTS }}
+            -Dsonar.tests=frontend/src
             -Dsonar.test.inclusions=**/*Test.java,**/*Tests.java,**/*.spec.ts,**/*.cy.ts
             -Dsonar.java.binaries=DSW02-Practica01/target/classes
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/target/**,**/cypress/results/**
