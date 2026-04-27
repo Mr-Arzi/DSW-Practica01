@@ -4,9 +4,6 @@ on:
   workflow_run:
     workflows:
       - 1-ci
-    branches:
-      - develop
-      - master
     types:
       - completed
   pull_request:
