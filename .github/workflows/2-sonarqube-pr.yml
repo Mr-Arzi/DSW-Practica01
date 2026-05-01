@@ -85,3 +85,9 @@ jobs:
             -Dsonar.sources=DSW02-Practica01/src/main/java,frontend/src
             -Dsonar.java.binaries=DSW02-Practica01/target/classes
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/target/**,**/cypress/results/**
+
+
+
+
+
+            
