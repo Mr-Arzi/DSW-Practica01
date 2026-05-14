@@ -1,9 +1,9 @@
-name: 3-docker-build
+name: 4-docker-build
 
 on:
   workflow_run:
     workflows:
-      - 2-sonarqube-pr
+      - 3-cypress
     branches:
       - develop
       - master
